@@ -9,7 +9,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/crypto/keys/hd"
 	"github.com/cosmos/cosmos-sdk/tests"
-	"github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/go-bip39"
 
 	secp256k1 "github.com/tendermint/btcd/btcec"
@@ -39,7 +39,7 @@ func (mock LedgerSECP256K1Mock) GetPublicKeySECP256K1(derivationPath []uint32) (
 	if derivationPath[0] != 44 {
 		return nil, errors.New("Invalid derivation path")
 	}
-	if derivationPath[1] != types.CoinType {
+	if derivationPath[1] != sdk.GetConfig().GetCoinType() {
 		return nil, errors.New("Invalid derivation path")
 	}
 
@@ -78,7 +78,7 @@ func (mock LedgerSECP256K1Mock) GetAddressPubKeySECP256K1(derivationPath []uint3
 	copy(compressedPublicKey[:], cmp.SerializeCompressed())
 
 	// Generate the bech32 addr using existing tmcrypto/etc.
-	addr := types.AccAddress(compressedPublicKey.Address()).String()
+	addr := sdk.AccAddress(compressedPublicKey.Address()).String()
 	return pk, addr, err
 }
 
