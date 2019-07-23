@@ -31,3 +31,8 @@ func RegisterProposalTypeCodec(o interface{}, name string) {
 func init() {
 	RegisterCodec(ModuleCdc)
 }
+
+// SetModuleCode let sdk users to customize module codec
+func SetModuleCodec(cdc *codec.Codec) {
+	ModuleCdc = cdc
+}

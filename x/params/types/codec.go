@@ -17,3 +17,8 @@ func init() {
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(ParameterChangeProposal{}, "cosmos-sdk/ParameterChangeProposal", nil)
 }
+
+// SetModuleCode let sdk users to customize module codec
+func SetModuleCodec(cdc *codec.Codec) {
+	ModuleCdc = cdc
+}

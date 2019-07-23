@@ -18,3 +18,8 @@ func init() {
 	codec.RegisterCrypto(ModuleCdc)
 	ModuleCdc.Seal()
 }
+
+// SetModuleCode let sdk users to customize module codec
+func SetModuleCodec(cdc *codec.Codec) {
+	ModuleCdc = cdc
+}
