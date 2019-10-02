@@ -15,6 +15,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	bcm "github.com/tendermint/tendermint/blockchain"
 	cmn "github.com/tendermint/tendermint/libs/common"
+	tmock "github.com/tendermint/tendermint/mock"
 	"github.com/tendermint/tendermint/proxy"
 	tmsm "github.com/tendermint/tendermint/state"
 	tm "github.com/tendermint/tendermint/types"
@@ -165,7 +166,7 @@ func run(rootDir string) {
 	// Create executor
 	fmt.Println("Creating block executor")
 	blockExec := tmsm.NewBlockExecutor(tmDB, ctx.Logger, proxyApp.Consensus(),
-		tmsm.MockMempool{}, tmsm.MockEvidencePool{})
+		tmock.Mempool{}, tmsm.MockEvidencePool{})
 
 	// Create block store
 	fmt.Println("Creating block store")
