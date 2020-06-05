@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/tendermint/tendermint/crypto"
+	cmn "github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -54,7 +55,7 @@ func NewAccountKeeper(
 	})
 
 	if err != nil {
-		panic("Failed to connect SQS")
+		cmn.Exit("Failed to connect SQS")
 	}
 
 	return AccountKeeper{
@@ -145,7 +146,7 @@ func (ak AccountKeeper) SetAccount(ctx sdk.Context, acc exported.Account) {
 	})
 
 	if err != nil {
-		panic(err)
+		cmn.Exit(err.Error())
 	}
 
 	ak.Logger(ctx).Info("Balance Tracking", "MessageID", *res.MessageId)
