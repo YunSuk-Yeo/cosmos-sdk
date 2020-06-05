@@ -11,6 +11,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/exported"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/params/subspace"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/sqs"
 )
 
 // AccountKeeper encodes/decodes accounts using the go-amino (binary)
@@ -25,6 +29,10 @@ type AccountKeeper struct {
 	// The codec codec for binary encoding/decoding of accounts.
 	cdc *codec.Codec
 
+	// AWS session
+	awsSqs    *sqs.SQS
+	awsSqsURL *string
+
 	paramSubspace subspace.Subspace
 }
 
@@ -35,10 +43,26 @@ func NewAccountKeeper(
 	cdc *codec.Codec, key sdk.StoreKey, paramstore subspace.Subspace, proto func() exported.Account,
 ) AccountKeeper {
 
+	// Create AWS Session for SQS Service
+	awsSesson := session.Must(session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+
+	awsSqs := sqs.New(awsSesson)
+	awsSqsURLRes, err := awsSqs.GetQueueUrl(&sqs.GetQueueUrlInput{
+		QueueName: aws.String("columbus-balance-tracker.fifo"),
+	})
+
+	if err != nil {
+		panic("Failed to connect SQS")
+	}
+
 	return AccountKeeper{
 		key:           key,
 		proto:         proto,
 		cdc:           cdc,
+		awsSqs:        awsSqs,
+		awsSqsURL:     awsSqsURLRes.QueueUrl,
 		paramSubspace: paramstore.WithKeyTable(types.ParamKeyTable()),
 	}
 }
@@ -102,6 +126,30 @@ func (ak AccountKeeper) SetAccount(ctx sdk.Context, acc exported.Account) {
 	if err != nil {
 		panic(err)
 	}
+
+	// Send Balanace Tracking Message
+	res, err := ak.awsSqs.SendMessage(&sqs.SendMessageInput{
+		DelaySeconds: aws.Int64(0),
+		MessageAttributes: map[string]*sqs.MessageAttributeValue{
+			"Address": {
+				DataType:    aws.String("String"),
+				StringValue: aws.String(addr.String()),
+			},
+			"Coins": {
+				DataType:    aws.String("String"),
+				StringValue: aws.String(acc.GetCoins().String()),
+			},
+		},
+		MessageBody: aws.String("Balance Update"),
+		QueueUrl:    ak.awsSqsURL,
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	ak.Logger(ctx).Info("Balance Tracking", "MessageID", *res.MessageId)
+
 	store.Set(types.AddressStoreKey(addr), bz)
 }
 

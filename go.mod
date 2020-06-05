@@ -3,6 +3,7 @@ module github.com/cosmos/cosmos-sdk
 go 1.13
 
 require (
+	github.com/aws/aws-sdk-go v1.31.11 // indirect
 	github.com/bartekn/go-bip39 v0.0.0-20171116152956-a05967ea095d
 	github.com/bgentry/speakeasy v0.1.0
 	github.com/btcsuite/btcd v0.0.0-20190115013929-ed77733ec07d
@@ -13,14 +14,14 @@ require (
 	github.com/gorilla/mux v1.7.0
 	github.com/mattn/go-isatty v0.0.6
 	github.com/pelletier/go-toml v1.2.0
-	github.com/pkg/errors v0.8.1
+	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.5
 	github.com/spf13/afero v1.2.1 // indirect
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.6.1
-	github.com/stretchr/testify v1.4.0
+	github.com/stretchr/testify v1.5.1
 	github.com/tendermint/btcd v0.1.1
 	github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5
 	github.com/tendermint/go-amino v0.15.0
