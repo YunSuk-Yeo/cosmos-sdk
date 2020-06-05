@@ -51,7 +51,7 @@ func NewAccountKeeper(
 
 	awsSqs := sqs.New(awsSesson)
 	awsSqsURLRes, err := awsSqs.GetQueueUrl(&sqs.GetQueueUrlInput{
-		QueueName: aws.String("columbus-balance-tracker.fifo"),
+		QueueName: aws.String("columbus-balance-tracker"),
 	})
 
 	if err != nil {
@@ -141,9 +141,8 @@ func (ak AccountKeeper) SetAccount(ctx sdk.Context, acc exported.Account) {
 				StringValue: aws.String(acc.GetCoins().String()),
 			},
 		},
-		MessageBody:    aws.String("Balance Update"),
-		MessageGroupId: aws.String(ctx.ChainID()),
-		QueueUrl:       ak.awsSqsURL,
+		MessageBody: aws.String("Balance Update"),
+		QueueUrl:    ak.awsSqsURL,
 	})
 
 	if err != nil {
