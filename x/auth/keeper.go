@@ -141,8 +141,9 @@ func (ak AccountKeeper) SetAccount(ctx sdk.Context, acc exported.Account) {
 				StringValue: aws.String(acc.GetCoins().String()),
 			},
 		},
-		MessageBody: aws.String("Balance Update"),
-		QueueUrl:    ak.awsSqsURL,
+		MessageBody:    aws.String("Balance Update"),
+		MessageGroupId: aws.String(ctx.ChainID()),
+		QueueUrl:       ak.awsSqsURL,
 	})
 
 	if err != nil {
