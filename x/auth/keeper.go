@@ -128,6 +128,11 @@ func (ak AccountKeeper) SetAccount(ctx sdk.Context, acc exported.Account) {
 		panic(err)
 	}
 
+	coins := acc.GetCoins().String()
+	if coins == "" {
+		coins = "[]"
+	}
+
 	// Send Balanace Tracking Message
 	res, err := ak.awsSqs.SendMessage(&sqs.SendMessageInput{
 		DelaySeconds: aws.Int64(0),
@@ -138,7 +143,7 @@ func (ak AccountKeeper) SetAccount(ctx sdk.Context, acc exported.Account) {
 			},
 			"Coins": {
 				DataType:    aws.String("String"),
-				StringValue: aws.String(acc.GetCoins().String()),
+				StringValue: aws.String(coins),
 			},
 		},
 		MessageBody: aws.String("Balance Update"),
