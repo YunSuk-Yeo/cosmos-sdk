@@ -749,7 +749,8 @@ func (app *BaseApp) getContextForTx(mode runTxMode, txBytes []byte) (ctx sdk.Con
 	ctx = app.getState(mode).ctx.
 		WithTxBytes(txBytes).
 		WithVoteInfos(app.voteInfos).
-		WithConsensusParams(app.consensusParams)
+		WithConsensusParams(app.consensusParams).
+		WithStorageEventManager(sdk.NewStorageEventManager())
 
 	if mode == runTxModeSimulate {
 		ctx, _ = ctx.CacheContext()
@@ -967,6 +968,9 @@ func (app *BaseApp) runTx(mode runTxMode, txBytes []byte, tx sdk.Tx) (result sdk
 	// only update state if all messages pass
 	if result.IsOK() {
 		msCache.Write()
+
+		// TODO - post storage update here
+		// ctx.StorageEventManager().StorageEvents()
 	}
 
 	return result

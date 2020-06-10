@@ -34,6 +34,9 @@ type Context struct {
 	minGasPrice   DecCoins
 	consParams    *abci.ConsensusParams
 	eventManager  *EventManager
+
+	// Custom Event Manager
+	storageEventManager *StorageEventManager
 }
 
 // Proposed rename, not done to avoid API breakage
@@ -53,6 +56,9 @@ func (c Context) BlockGasMeter() GasMeter     { return c.blockGasMeter }
 func (c Context) IsCheckTx() bool             { return c.checkTx }
 func (c Context) MinGasPrices() DecCoins      { return c.minGasPrice }
 func (c Context) EventManager() *EventManager { return c.eventManager }
+
+// Custom Event Manager
+func (c Context) StorageEventManager() *StorageEventManager { return c.storageEventManager }
 
 // clone the header before returning
 func (c Context) BlockHeader() abci.Header {
@@ -78,6 +84,8 @@ func NewContext(ms MultiStore, header abci.Header, isCheckTx bool, logger log.Lo
 		gasMeter:     stypes.NewInfiniteGasMeter(),
 		minGasPrice:  DecCoins{},
 		eventManager: NewEventManager(),
+
+		storageEventManager: NewStorageEventManager(),
 	}
 }
 
@@ -164,6 +172,11 @@ func (c Context) WithConsensusParams(params *abci.ConsensusParams) Context {
 
 func (c Context) WithEventManager(em *EventManager) Context {
 	c.eventManager = em
+	return c
+}
+
+func (c Context) WithStorageEventManager(em *StorageEventManager) Context {
+	c.storageEventManager = em
 	return c
 }
 
